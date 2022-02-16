@@ -32,7 +32,6 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
                  self.movies = dataDictionary["results"] as! [[String:Any]]
                  self.tableView.reloadData()
-                 print(dataDictionary)
 
                     // TODO: Get the array of movies
                     // TODO: Store the movies in a property to use elsewhere
@@ -53,13 +52,28 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let title = movie["title"] as! String
         let synopsis = movie["overview"] as! String
         cell.titleLabel.text = title
+        cell.titleLabel.sizeToFit()
         cell.synopsisLabel.text = synopsis
+        cell.synopsisLabel.sizeToFit()
         
         let baseUrl = "https://image.tmdb.org/t/p/w185"
         let posterPath = movie["poster_path"] as! String
         let posterUrl = URL(string: baseUrl + posterPath)
         cell.posterView.af_setImage(withURL: posterUrl!)
         return cell
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender:Any?){
+        print("Loading up the details screen")
+        //Find the selected movie
+        let cell = sender as! UITableViewCell
+        let indexPath = tableView.indexPath(for: cell)!
+        let movie = movies[indexPath.row]
+        let detailViewController = segue.destination as! MovieDetailsViewController
+        detailViewController.movie = movie
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        //Pass the selected movie to the details view controller
     }
 
 
